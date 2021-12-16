@@ -12,8 +12,7 @@
 
 // ==/UserScript==
 
-_window = unsafeWindow;
-// _window = window;
+_window = window;
 
 hijack = () => {
     /*
