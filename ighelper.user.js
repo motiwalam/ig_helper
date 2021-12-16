@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name IG Helper
-// @version 1.1
+// @version 1.2
 // @description Provides scripting functionality to instagram.com
 // @author chosen
 
@@ -8,95 +8,12 @@
 // @match https://www.instagram.com/*
 
 
-// @require https://openuserjs.org/src/libs/sizzle/GM_config.js
-// @grant GM_getValue
-// @grant GM_setValue
-
 // @run-at document-start
 
 // ==/UserScript==
 
 _window = unsafeWindow;
 // _window = window;
-
-// create scheduler config
-csc = () => {
-    const sid = "SchedulerConfig";
-    GM_config.init(
-        {
-            id: sid,
-            fields: {
-                m1: {
-                    section: [
-                        'Messages to be scheduled'
-                    ],
-                    label: "Message 1",
-                    type: "message",
-
-                }
-            },
-
-            types: {
-                message: {
-                    default: null,
-                    toNode: function(configId) {
-                        debugger;
-                        const field = this.settings,
-                              value = this.value,
-                              id = this.id,
-                              create = this.create,
-                              retNode = create('div', {
-                                  className: 'config_var',
-                                  id: `${configId}_${id}_var`,
-                                  title: field.title || ''
-                              });
-
-                        retNode.appendChild(create('label', {
-                            innerHTML: field.label,
-                            id: `${configId}_${id}_field_label`,
-                            for: `${configId}_field_${id}`,
-                            className: 'field_label',
-                        }));
-
-                        ['tid', 'delay', 'message'].forEach(i => {
-                            const props = {
-                                id: `${configId}_field_${id}_${i}`,
-                                type: 'text',
-                                size: '100',
-                                value: value ? value[i] : "",
-
-                            }
-                            retNode.appendChild(create('input', props));
-                        });
-
-                        return retNode;
-                    },
-
-                    toValue: () => {
-                        if (this.wrapper) {
-                            const id = this.id;
-                            const rval = {};
-                            ['tid', 'delay', 'message'].forEach(i => {
-                                var input = this.wrapper.getElementById(`${configId}_field_${id}_${i}`);
-                                rval[i] = (input.value);
-                            })
-
-                            return rval;
-                        }
-
-                        return null;
-                    },
-
-                    reset: () => {
-
-                    },
-                }
-            }
-        }
-    );
-
-    GM_config.open();
-}
 
 hijack = () => {
     /*
@@ -169,6 +86,9 @@ init = () => {
 
     // schedule a message s in thread t to run in d milliseconds
     schedule = (d, t, s) => setTimeout(sdm, d, t, s);
+
+    // send a message s n times to thread t 
+    spam = (n,t,s) => Array(n).fill(null).forEach(() => sdm(t,s));
 
     // --------- MODULE DEFINITIONS ---------
 
